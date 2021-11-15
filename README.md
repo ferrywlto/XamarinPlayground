@@ -77,9 +77,56 @@ The file should look like this afterwards:
 9. You should able to use the app settings in platform project now.
 
 iOS: `AppDelegate.cs`
-[use appsetting in iOS](doc/appSettings/mobilebuildtools-ios.png)
+
+![use appsetting in iOS](doc/appSettings/mobilebuildtools-ios.png)
 
 Android: `MainActivity.cs`
-[use appsetting in Android](doc/appSettings/mobilebuildtools-android.png)
 
-**Note: If the generated class cannot be referenced in platform project, repeat steps 5-9.**
+![use appsetting in Android](doc/appSettings/mobilebuildtools-android.png)
+
+**Note: If the generated class cannot be referenced in platform project or you have updated `buildtools.json`/`appsettings.json` for new setting item, repeat steps 5-9.**
+
+## Declarative C# UI
+
+Instead of using XAML for UI and layout, we can simply use single language (C#) to write UI/Layout code, as well as logic code. To boost productivity via better IDE and code refactoring support.
+
+1. Install `Xamarin.CommunityToolkit` nuget package. It contains the `DeclarativeCSharp` plus other useful packages.
+
+![declarative csharp install](doc/declarativeCSharp/declarative-csharp-install.png)
+
+2. The code of your app entry point become like this:
+
+![declarative csharp app](doc/declarativeCSharp/declarative-csharp-app.png)
+```c#
+public partial class App : Application {
+    public App() {
+        MainPage = new MainPage();
+    }
+}
+```
+
+3. The code of your content pages should like this:
+
+![declarative csharp page](doc/declarativeCSharp/declarative-csharp-page.png)
+```c#
+public partial class MainPage : ContentPage {
+    public MainPage() {
+        Content = new StackLayout() {
+            Children = {
+                new Map() {
+                    VerticalOptions = LayoutOptions.FillAndExpand,
+                    InitialCameraUpdate = CameraUpdateFactory.NewCameraPosition(
+                        new CameraPosition(
+                            new Position(22.410772, 113.980277), 13, 30, 60)),
+                },
+                new Label() {
+                    Text = "Hello Declarative C# UI!",
+                    HorizontalOptions = LayoutOptions.Center,
+                    VerticalOptions = LayoutOptions.CenterAndExpand,
+                }
+            }
+        };
+    }
+}
+```
+4. Now you can code in pure C#. Any code that still use XAML with code behind C# will remains intact and continue working.
