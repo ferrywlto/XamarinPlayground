@@ -201,5 +201,6 @@ riderModule.iml
 /_ReSharper.Caches/
 .idea/
 
-# Do not check in secrets into source control
-Secrets.cs
+# Mobile.BuildTools
+appsettings.json
+appsettings.*.json

@@ -20,7 +20,8 @@ namespace DeclarativeSharp.iOS {
         public override bool FinishedLaunching(UIApplication app, NSDictionary options) {
             global::Xamarin.Forms.Forms.Init();
 
-            Xamarin.FormsGoogleMaps.Init(Secrets.GoogleMapKey);
+            var key = DeclarativeSharp.MyNamespace.MySettings.GoogleMapKey;
+            Xamarin.FormsGoogleMaps.Init(key);
 
             LoadApplication(new App());
 
