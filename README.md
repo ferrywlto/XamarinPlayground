@@ -130,3 +130,41 @@ public partial class MainPage : ContentPage {
 }
 ```
 4. Now you can code in pure C#. Any code that still use XAML with code behind C# will remains intact and continue working.
+
+## Using Google Map instead of built-in map.
+
+1. Install `Xamarin.Forms.GoogleMaps` nuget package.
+2. Install `Xamarin.Build.Download` nuget package. This is required to enable platform specific project to download native google map code during build. 
+3. You will create the `Xamarin.Forms.GoogleMaps.Map` component in your content page like this:
+```c#
+new Map() {
+    VerticalOptions = LayoutOptions.FillAndExpand,
+    InitialCameraUpdate = CameraUpdateFactory.NewCameraPosition(
+        new CameraPosition(
+            new Position(22.410772, 113.980277),13,30,60)),
+}
+```
+4. On iOS project, initialize google map at `AppDelegate.cs`, `FinishedLaunching` method:
+```c#
+public override bool FinishedLaunching(UIApplication app, NSDictionary options) {
+    global::Xamarin.Forms.Forms.Init();
+
+    Xamarin.FormsGoogleMaps.Init(key); // Load the key from app setting
+
+    LoadApplication(new App());
+
+    return base.FinishedLaunching(app, options);
+}
+```
+![google map in iOS](doc/googleMap/googlemap-map.png)
+
+To enable `LocationService`, add the following keys to `info.plist`:
+- NSLocationAlwaysUsageDescription
+- NSLocationWhenInUseUsageDescription
+- NSLocationAlwaysAndWhenInUseUsageDescription
+
+The values are arbitrary informative messages.  
+
+![enable location service in iOS](doc/googleMap/googlemap-location-service-info-plist.png)
+
+5. On Android (coming soon.)

@@ -42,8 +42,6 @@
     "DeclarativeSharp": [
       {
         "accessibility": "Public",
-        "namespace": "MyNamespace",
-        "className": "MySettings",
         "properties": [
           {
             "name": "GoogleMapKey",
