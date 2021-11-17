@@ -50,8 +50,11 @@ Optional field name | Default value
 accessibility | Internal
 namespace | Helpers
 classname | AppSettings
+prefix | BuildTools_
 
 **Note: the section name must be `appSettings` and it must have a property named the same as your project name (the one installed the nuget package). In this case i.e `DeclarativeSharp`** 
+
+**When build in CI/CD pipeline, the tool will look for `[prefix]property_name` environment variable. In our example this will become `BuildTools_GoogleMapKey`.**
 
 The `properties` array should specify what properties the generated class will have. It have to match the key-value pairs specified in following places:
 
@@ -133,6 +136,8 @@ public partial class MainPage : ContentPage {
 
 ## Using Google Map instead of built-in map.
 
+Reference: [Xamarin.Forms Map Initialization and Configuration](https://docs.microsoft.com/en-us/xamarin/xamarin-forms/user-interface/map/setup)
+
 1. Install `Xamarin.Forms.GoogleMaps` nuget package.
 2. Install `Xamarin.Build.Download` nuget package. This is required to enable platform specific project to download native google map code during build. 
 3. You will create the `Xamarin.Forms.GoogleMaps.Map` component in your content page like this:
@@ -144,6 +149,7 @@ new Map() {
             new Position(22.410772, 113.980277),13,30,60)),
 }
 ```
+### Google Map on iOS
 4. On iOS project, initialize google map at `AppDelegate.cs`, `FinishedLaunching` method:
 ```c#
 public override bool FinishedLaunching(UIApplication app, NSDictionary options) {
@@ -167,4 +173,137 @@ The values are arbitrary informative messages.
 
 ![enable location service in iOS](doc/googleMap/googlemap-location-service-info-plist.png)
 
-5. On Android (coming soon.)
+```xml
+<key>NSLocationAlwaysUsageDescription</key>
+<string>Can we use your location at all times?</string>
+<key>NSLocationWhenInUseUsageDescription</key>
+<string>Can we use your location when your application is being used?</string>
+<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+<string>Can we use your location at all times?</string>
+```
+### Google Map on Android
+1. It requires configuring the `manifest` section in `buildtools.json` of `MobileBuildTools` nuget package.
+
+```json
+"manifests": {
+"token": "$$",
+"variablePrefix": "Manifest_",
+"missingTokensAsErrors": true,
+"disable": false
+},
+```
+Note: When build in CI/CD pipeline, Mobile.BuildTools will look for `[prefix][secretName]` environment variable. In our case: `Manifest_GoogleMapKey` 
+
+2. Add Google Map API Key
+Add the following key into `AndroidManifest.xml`, under `application` tag:
+```xml
+<meta-data android:name="com.google.android.geo.API_KEY" android:value="$GoogleMapKey$" />
+```
+
+Note:
+- We use `$GoogleMapKey$` here so Mobile.BuildTools can replace with values specified in `appsettings.json`, thus no key will commit to source control.
+- It seems Android emulator does care the value of API key, as long as the API key tag exists, the map will show up correctly. (Not certain, but no real Android machine can test yet.)
+
+3. Backward compatibility to lower API level (<23)
+
+Add the following key into `AndroidManifest.xml`, under `application` tag:
+    
+```xml
+<uses-library android:name="org.apache.http.legacy" android:required="false" />
+```
+
+4. Using Location Service 
+To use location service, add the following keys into `AndroidManifest.xml`:
+- `android.permission.ACCESS_COARSE_LOCATION`
+- `android.permission.ACCESS_FINE_LOCATION`
+```xml
+<uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+```
+
+The final `AndroidManifest.xml` should look like this:
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" android:versionCode="1" android:versionName="1.0" package="io.verdantsparks.DeclarativeSharp">
+    <uses-sdk android:minSdkVersion="21" android:targetSdkVersion="30" />
+    <application android:label="DeclarativeSharp.Android">
+        <meta-data android:name="com.google.android.geo.API_KEY" android:value="$GoogleMapKey$" />
+        <meta-data android:name="com.google.android.gms.version" android:value="@integer/google_play_services_version" />
+        <uses-library android:name="org.apache.http.legacy" android:required="false" />
+    </application>
+
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+</manifest>
+```
+
+5. Edit `MainActivity.cs`
+
+- Initialize `Xamarin.FormsGoogleMaps` **AFTER** `Xamarin.Forms.Forms.Init()`
+```c#
+Xamarin.Forms.Forms.Init(this, savedInstanceState);
+
+Xamarin.FormsGoogleMaps.Init(this, savedInstanceState, new PlatformConfig());
+```
+- Request location permission on start:
+```c#
+protected override void OnStart()
+{
+    base.OnStart();
+
+    if ((int)Build.VERSION.SdkInt >= 23)
+    {
+        if (CheckSelfPermission(Manifest.Permission.AccessFineLocation) != Permission.Granted)
+        {
+            RequestPermissions(LocationPermissions, RequestLocationId);
+        }
+        else
+        {
+            // Permissions already granted - display a message.
+        }
+    }
+}
+```
+- Handle permission request result:
+```c#
+public override void OnRequestPermissionsResult(int requestCode, string[] permissions, [GeneratedEnum] Permission[] grantResults)
+{
+    if (requestCode == RequestLocationId)
+    {
+        if ((grantResults.Length == 1) && (grantResults[0] == (int)Permission.Granted)) {}
+        // Permissions granted - display a message.
+        else {}
+        // Permissions denied - display a message.
+    }
+    else
+    {
+        base.OnRequestPermissionsResult(requestCode, permissions, grantResults);
+    }
+}
+```
+
+
+### Enable Google Map on Android Emulator
+[Maps SDK for Android Quickstart](https://developers.google.com/maps/documentation/android-sdk/start)
+
+**Note: By default Android Emulator cannot display Google Map in Apps or even their genuine GoogleMaps App.**
+
+1. Use API level 28+ image with Google Play enabled.
+![Android image with Google Play](doc/googleMap/googlemap-android-emulator-image.png)
+
+
+2. Start emulator, go to [Setting] -> [Google Play] -> [Update], this will open Google Play App.
+
+
+3. The trickiest part, you must click the menu on top right and click [Updates] to update the default Google Apps (e.g. GoogleMaps). **Don't get faked from the "Loading..." text, or clicking "sign-in" on Play app. It will just load and displaying "checking" forever!**  
+![Android update Google Play](doc/googleMap/googlemap-update-play.png)
+
+4. Your app should and Google Map App should display correctly.
+![Google Map shown in Android App](doc/googleMap/googlemap-android-success.png)
+
+
+## Entity Framework with SQLite
+
+Xamarin use Mono, and Mono only support up to .netstandard2.1, thus Xamarin project cannot use `Microsoft.EntityFrameworkCore.Sqlite` version `6.0.0`, the last installable version is `5.0.12`.
+
+`Xamarin.Essentials` nuget package is required for on device `FileSystem` object access.

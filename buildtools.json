@@ -25,9 +25,9 @@
     }
   },
   "manifests": {
-    "token": "$",
+    "token": "$$",
     "variablePrefix": "Manifest_",
-    "missingTokensAsErrors": false,
+    "missingTokensAsErrors": true,
     "disable": false
   },
   "releaseNotes": {
@@ -42,6 +42,7 @@
     "DeclarativeSharp": [
       {
         "accessibility": "Public",
+        "prefix": "BuildTools_",
         "properties": [
           {
             "name": "GoogleMapKey",
