@@ -1,4 +1,5 @@
 ﻿using System;
+using DeclarativeSharp.Model;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
@@ -7,11 +8,12 @@ using Xamarin.Forms.Xaml;
 namespace DeclarativeSharp {
     public partial class App : Application {
         public App() {
-            MainPage = new MainPage();
+            MainPage = new LandingPage();
         }
 
-        protected override void OnStart() {
+        protected override async void OnStart() {
             // Handle when your app starts
+            await new CafeRepo().Init();
         }
 
         protected override void OnSleep() {

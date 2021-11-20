@@ -93,7 +93,7 @@ Android: `MainActivity.cs`
 
 Instead of using XAML for UI and layout, we can simply use single language (C#) to write UI/Layout code, as well as logic code. To boost productivity via better IDE and code refactoring support.
 
-1. Install `Xamarin.CommunityToolkit` nuget package. It contains the `DeclarativeCSharp` plus other useful packages.
+1. Install `Xamarin.CommunityToolkit` & `Xamarin.CommuityToolkit.Markup` nuget package. It contains the `DeclarativeCSharp` plus other useful packages.
 
 ![declarative csharp install](doc/declarativeCSharp/declarative-csharp-install.png)
 
@@ -301,6 +301,83 @@ public override void OnRequestPermissionsResult(int requestCode, string[] permis
 4. Your app should and Google Map App should display correctly.
 ![Google Map shown in Android App](doc/googleMap/googlemap-android-success.png)
 
+
+## MVVM Architecture Data Binding
+- Simple data binding example: `BindingTestPage.cs`
+
+### Create ViewModel
+```c#
+public class BindingTestViewModel : INotifyPropertyChanged {
+    public event PropertyChangedEventHandler PropertyChanged;
+    private void OnPropertyChanged(string propertyName) {
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+    }
+
+    private int _sliderValue;
+    public int SliderValue {
+        get => _sliderValue;
+        set {
+            if (_sliderValue == value) return;
+
+            _sliderValue = value;
+            OnPropertyChanged(nameof(SliderValue));
+        }
+    }
+
+    public BindingTestViewModel() {
+        SliderValue = 0;
+    }
+}
+```
+1. A view model needs to implement `INotifyPropertyChanged` interface to enable control being notified.
+2. For any property in view model, create private backing field and modify the setter, in setter `OnPropertyChanged` must be called, so the controls receive update notification.
+3. The default implementation of `OnPropertyChanged` is sufficient and no need to change.
+
+### Setup ContentPage UI
+```c#
+public BindingTestPage() {
+    // IMPORTANT!
+    BindingContext = vm = new BindingTestViewModel();
+
+    Content = new StackLayout() {
+        Children = {
+            new Label() {
+                    Text = "Should replace me.",
+                    // You can override BindingContext here!
+                    // BindingContext = anotherViewModel,
+                }
+                .Bind(Label.TextProperty, nameof(vm.SliderValue)
+                    // Override here takes highest precedence.
+                    // source: yetAnotherViewModel
+                    ),
+            MySlider,
+            new Button() { Text = "Add"}.Invoke(button => button.Clicked += (_, _) => {
+                vm.SliderValue += 1;
+            }),
+        },
+    };
+}
+```
+1. Create view model instance. Setting `BindingContext` of content page will inherit by all controls in visual tree. So you don't need to specify `BindingContext` for each control.
+```c#
+BindingContext = vm = new BindingTestViewModel();
+```
+2. You can override the page `BindingContext` for specific control, set it in controls initializer.
+```c#
+new Label() { BindingContext = anotherViewModel }
+```
+3. You can also override the page `BindingContext` in `.Bind()` method, setting the `source` parameter.
+```c#
+new Label() {}.Bind(Label.TextProperty, nameof(vm.SliderValue), source: yetAnotherViewModel),
+```
+4. Update view model with bind
+```c#
+public Slider MySlider =>
+    new Slider() { Maximum = 100, }
+        .Bind(Slider.ValueProperty, nameof(vm.SliderValue), BindingMode.TwoWay);
+```
+5. The complete page will have label text update as slider move.
+![Data binding sample](doc/dataBinding/databinding-basic-sample.png)
 
 ## Entity Framework with SQLite
 
