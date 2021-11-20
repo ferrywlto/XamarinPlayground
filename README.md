@@ -1,6 +1,8 @@
 # Xamarin Playground
 
-A test project to try out different aspects in Xamarin development.
+A test project to try out different aspects in Xamarin.Forms development.
+
+Initial Xamarin.Forms Version: 5.0
 
 ## Secrets and app settings management 
 
