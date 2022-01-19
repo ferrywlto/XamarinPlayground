@@ -392,3 +392,31 @@ Xamarin use Mono, and Mono only support up to .netstandard2.1, thus Xamarin proj
 
 
 ## In-App Purchase (IAP) - iOS
+
+This attribute is critical for IAP and other platform dependent code.
+It means when you request a service of particular interface in `Shared` Project, provide this platform specific implementation to the DI at run time.
+
+```c#
+[assembly: Dependency(typeof(ImplementedType))]
+```
+
+In iOS project:
+```c#
+[assembly: Dependency(typeof(IOSInAppPurchases))]
+
+namespace InAppPurchasesApp.iOS
+{
+    public class IOSInAppPurchases : IInAppPurchases, IDisposable
+    {
+```
+
+In Shared project you can call:
+```c#
+var inAppPurchases = DependencyService.Get<IInAppPurchases>();
+
+try
+{
+    var paymentTransaction = await inAppPurchases.PurchaseAsync("iaptest.product.1week");
+```
+
+Requesting `IInAppPurchase` interface will return `IOSInAppPurchases` because `IOSInAppPurchases` implements `IInAppPurchases`
