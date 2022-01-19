@@ -13,7 +13,7 @@ namespace DeclarativeSharp {
 
         protected override async void OnStart() {
             // Handle when your app starts
-            await new CafeRepo().Init();
+//            await new CafeRepo().Init();
         }
 
         protected override void OnSleep() {

@@ -25,8 +25,12 @@ namespace DeclarativeSharp.Model {
                 }
             };
 
-            await ExecuteCommand(
-                context => {context.Cafes.RemoveRange(context.Cafes.ToList());});
+            await using var ctx = new MaidCafeContext();
+
+            if (ctx.Cafes.Any()) {
+                await ExecuteCommand(
+                    context => {context.Cafes.RemoveRange(context.Cafes.ToList());});
+            }
 
             return await ExecuteCommand(context => {
                 context.Cafes.AddRangeAsync(cafes);

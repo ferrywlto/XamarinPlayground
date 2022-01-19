@@ -70,6 +70,7 @@ from [MobileBuiltTools](https://mobilebuildtools.com/config/appsettings/):
 ```
 
 The file should look like this afterwards:
+
 ![buildtools.json added](doc/appSettings/mobilebuildtools-config.png)
 
 5. Clean the whole solution.
@@ -298,9 +299,11 @@ public override void OnRequestPermissionsResult(int requestCode, string[] permis
 
 
 3. The trickiest part, you must click the menu on top right and click [Updates] to update the default Google Apps (e.g. GoogleMaps). **Don't get faked from the "Loading..." text, or clicking "sign-in" on Play app. It will just load and displaying "checking" forever!**  
+
 ![Android update Google Play](doc/googleMap/googlemap-update-play.png)
 
-4. Your app should and Google Map App should display correctly.
+5. Your app should and Google Map App should display correctly.
+
 ![Google Map shown in Android App](doc/googleMap/googlemap-android-success.png)
 
 
@@ -386,3 +389,6 @@ public Slider MySlider =>
 Xamarin use Mono, and Mono only support up to .netstandard2.1, thus Xamarin project cannot use `Microsoft.EntityFrameworkCore.Sqlite` version `6.0.0`, the last installable version is `5.0.12`.
 
 `Xamarin.Essentials` nuget package is required for on device `FileSystem` object access.
+
+
+## In-App Purchase (IAP) - iOS
