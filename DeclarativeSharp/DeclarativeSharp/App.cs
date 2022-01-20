@@ -8,7 +8,7 @@ using Xamarin.Forms.Xaml;
 namespace DeclarativeSharp {
     public partial class App : Application {
         public App() {
-            MainPage = new LandingPage();
+            MainPage = new NavigationPage(new ProductPage());
         }
 
         protected override async void OnStart() {
