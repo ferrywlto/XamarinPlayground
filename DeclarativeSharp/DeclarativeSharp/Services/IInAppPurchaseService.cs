@@ -1,13 +1,14 @@
+using System;
 using System.Threading.Tasks;
 
 namespace DeclarativeSharp.Services {
-    public interface IInAppPurchaseService {
-        Task<Purchase[]> GetPrices(params string[] ids);
-        Task<Receipt> BuyNative(Purchase purchase);
+    public interface IInAppPurchaseService : IDisposable {
+        Task<ProductForPurchase[]> GetPrices(params string[] ids);
+        Task<Receipt> BuyNative(ProductForPurchase productForPurchase);
     }
 
 
-    public class Purchase {
+    public class ProductForPurchase {
         public string Id { get; set; }
 
         /// <summary>

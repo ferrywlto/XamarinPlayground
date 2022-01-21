@@ -1,15 +1,12 @@
 using System;
 using System.Collections.ObjectModel;
-using System.Runtime.CompilerServices;
 using DeclarativeSharp.Services;
-using DeclarativeSharp.Views.BindingTest;
-using Xamarin.CommunityToolkit.Markup;
 using Xamarin.Forms;
 
 namespace DeclarativeSharp {
     public class ProductPage : ContentPage {
 
-        public ObservableCollection<Purchase> AvailablePurchases = new ObservableCollection<Purchase>();
+        public ObservableCollection<ProductForPurchase> AvailablePurchases = new ObservableCollection<ProductForPurchase>();
         public ListView purchaseView;
 
         public ProductPage() {
@@ -29,7 +26,7 @@ namespace DeclarativeSharp {
 
                         btnBuy.Clicked += async (sender, args) => {
                             var _btn = (Button)sender;
-                            var purchase = (Purchase)_btn.BindingContext;
+                            var purchase = (ProductForPurchase)_btn.BindingContext;
                             await Navigation.PushAsync(new DetailPage(purchase));
                         };
 

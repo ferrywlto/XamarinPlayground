@@ -96,6 +96,8 @@
         <Compile Include="InAppPurchaseManager.cs" />
         <None Include="Entitlements.plist" />
         <None Include="Info.plist" />
+        <Compile Include="MyPaymentTransactionObserverDeprecated.cs" />
+        <Compile Include="MyPaymentTransactionObserver.cs" />
         <Compile Include="Properties\AssemblyInfo.cs" />
     </ItemGroup>
     <ItemGroup>

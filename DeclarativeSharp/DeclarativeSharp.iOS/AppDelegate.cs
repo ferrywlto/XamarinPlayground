@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Foundation;
+using StoreKit;
 using UIKit;
 
 namespace DeclarativeSharp.iOS {
@@ -22,6 +23,9 @@ namespace DeclarativeSharp.iOS {
 
             var key = DeclarativeSharp.Helpers.AppSettings.GoogleMapKey;
             Xamarin.FormsGoogleMaps.Init(key);
+
+            // Init In-App Purchase
+            SKPaymentQueue.DefaultQueue.AddTransactionObserver(_myPaymentTransactionObserver);
 
             LoadApplication(new App());
 
