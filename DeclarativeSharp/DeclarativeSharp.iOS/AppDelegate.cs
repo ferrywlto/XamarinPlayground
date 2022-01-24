@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using DeclarativeSharp.Services;
 using Foundation;
 using StoreKit;
 using UIKit;
+using Xamarin.Forms;
 
 namespace DeclarativeSharp.iOS {
     // The UIApplicationDelegate for the application. This class is responsible for launching the
@@ -24,8 +26,8 @@ namespace DeclarativeSharp.iOS {
             var key = DeclarativeSharp.Helpers.AppSettings.GoogleMapKey;
             Xamarin.FormsGoogleMaps.Init(key);
 
-            // Init In-App Purchase
-            SKPaymentQueue.DefaultQueue.AddTransactionObserver(_myPaymentTransactionObserver);
+            // Register with method approach
+            DependencyService.Register<IInAppPurchaseService, InAppPurchaseManager>();
 
             LoadApplication(new App());
 

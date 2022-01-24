@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 
 namespace DeclarativeSharp.Services {
     public interface IInAppPurchaseService : IDisposable {
+        bool CanMakePayments();
         Task<ProductForPurchase[]> GetPrices(params string[] ids);
         Task<Receipt> BuyNative(ProductForPurchase productForPurchase);
     }

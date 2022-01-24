@@ -11,10 +11,23 @@ namespace DeclarativeSharp {
             };
 
             btn.Clicked += async (sender, args) => {
-                using var iap = DependencyService.Get<IInAppPurchaseService>();
-                var result = await iap.BuyNative(_productForPurchase);
+                var iap = DependencyService.Get<IInAppPurchaseService>();
 
-                Console.WriteLine(result);
+                if (!iap.CanMakePayments()) {
+                    await DisplayAlert("Error", "In-App Purchase Disabled.", "OK");
+                    return;
+                }
+
+                try {
+                    var result = await iap.BuyNative(_productForPurchase);
+                    Console.WriteLine(result);
+                    await DisplayAlert("Congratulations!", $"You have just purchased {result.Id}", "OK");
+                }
+                catch (Exception e) {
+                    Console.WriteLine(e);
+
+                    await DisplayAlert("Error", e.Message.ToString(), "OK");
+                }
             };
             return btn;
         }
