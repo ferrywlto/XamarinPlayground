@@ -1,4 +1,5 @@
 using System;
+using System.Net;
 using System.Threading.Tasks;
 using DeclarativeSharp.Services;
 using Foundation;
@@ -15,14 +16,21 @@ namespace DeclarativeSharp.iOS {
             switch (transaction.TransactionState) {
                 case SKPaymentTransactionState.Failed:
                     HandleTransactionFailed(transaction, tcs);
+                    SKPaymentQueue.DefaultQueue.FinishTransaction(transaction);
                     break;
 
                 case SKPaymentTransactionState.Purchased:
                     HandleTransactionSucceed(transaction, tcs);
+                    // TODO: Verify receipt at server before finish transaction
+                    // if fail then TrySetException
+                    SKPaymentQueue.DefaultQueue.FinishTransaction(transaction);
                     break;
 
                 // Restored only happens at Non-consumable and Auto-Renew subscription
                 case SKPaymentTransactionState.Restored:
+                    // TODO: Verify receipt at server before finish transaction
+                    // if fail then TrySetException
+                    SKPaymentQueue.DefaultQueue.FinishTransaction(transaction);
                     break;
 
 
@@ -32,14 +40,18 @@ namespace DeclarativeSharp.iOS {
             }
         }
 
-        private void HandleTransactionSucceed(
+        private async void HandleTransactionSucceed(
             SKPaymentTransaction transaction,
             TaskCompletionSource<Receipt> taskCompletionSource
         ) {
             if (!LocalReceiptExists) {
                 taskCompletionSource.TrySetException(new Exception("No app store receipt file found!"));
             } else {
-                taskCompletionSource.TrySetResult(GetReceipt(transaction));
+                var receipt = (AppleReceipt)GetReceipt(transaction);
+                var util = new NetworkUtil();
+                var result = await util.VerifyReceipt(receipt);
+
+                if (result) { taskCompletionSource.TrySetResult(receipt); }
             }
         }
         private void HandleTransactionFailed(
@@ -51,11 +63,12 @@ namespace DeclarativeSharp.iOS {
         }
 
         private Receipt GetReceipt(SKPaymentTransaction transaction) {
+
             return new AppleReceipt() {
                 Id = transaction.Payment.ProductIdentifier,
                 TransactionId = transaction.TransactionIdentifier,
                 BundleId = NSBundle.MainBundle.BundleIdentifier,
-                Data = LocalReceiptData.ToArray(),
+                Data = transaction.TransactionReceipt?.ToArray(),
             };
         }
 

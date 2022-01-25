@@ -49,6 +49,19 @@ namespace DeclarativeSharp {
             };
             btn.Clicked += BtnOnClicked;
 
+//            var btnNetwork = new Button() {
+//                Text = "Connect",
+//                HorizontalOptions = LayoutOptions.StartAndExpand,
+//                VerticalOptions = LayoutOptions.Start
+//            };
+//
+//            btnNetwork.Clicked += async (sender, args) => {
+//                var network = new NetworkUtil();
+//                await network.VerifyReceipt(new AppleReceipt() {
+//                    Id = "1", BundleId = "io.verdantsparks.test2", TransactionId = "2130918", Data = new byte[1]
+//                });
+//            };
+
             Title = "Product Page";
 
             Content = new StackLayout() {
@@ -65,8 +78,8 @@ namespace DeclarativeSharp {
             const string productId1 = "io.verdantsparks.test2.air1";
             const string productId2 = "io.verdantsparks.test2.air10";
             // These two will not retrieve
-            const string productId3 = "io.verdantsparks.test2.air1";
-            const string productId4 = "io.verdantsparks.test2.air11";
+            const string productId3 = "io.verdantsparks.test2.level";
+            const string productId4 = "io.verdantsparks.test2.autorenew";
             var prices = await iap.GetPrices(productId1, productId2, productId3, productId4);
 
             foreach (var price in prices) {

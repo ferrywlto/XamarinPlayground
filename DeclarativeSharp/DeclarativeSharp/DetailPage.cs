@@ -20,11 +20,11 @@ namespace DeclarativeSharp {
 
                 try {
                     var result = await iap.BuyNative(_productForPurchase);
-                    Console.WriteLine(result);
+                    Console.WriteLine(result.TransactionId);
                     await DisplayAlert("Congratulations!", $"You have just purchased {result.Id}", "OK");
                 }
                 catch (Exception e) {
-                    Console.WriteLine(e);
+                    Console.WriteLine($"error: {e.Message}");
 
                     await DisplayAlert("Error", e.Message.ToString(), "OK");
                 }

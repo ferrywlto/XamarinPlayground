@@ -8,12 +8,13 @@ namespace DeclarativeSharp.iOS {
 
         private readonly Dictionary<string, TaskCompletionSource<Receipt>> _taskCompletionSources = new();
         public TaskCompletionSource<Receipt> GetRunningPurchaseTask(string productId) {
-            if (!_taskCompletionSources.ContainsKey(productId))
-                throw new Exception($"Task for {productId} not exist.");
+            if (!_taskCompletionSources.ContainsKey(productId)) {
+                // It could be pending purchase left from previous app crash / whatever, not necessary an exception.
+//                throw new Exception($"Task for {productId} not exist.");
+                _taskCompletionSources[productId] = new TaskCompletionSource<Receipt>();
+            }
 
-            var tcs = _taskCompletionSources[productId];
-
-            return tcs;
+            return _taskCompletionSources[productId];
         }
 
         public TaskCompletionSource<Receipt> StartNewPurchaseTask(string productId) {

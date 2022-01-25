@@ -1,9 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>netstandard2.1</TargetFramework>
       <UserSecretsId>5dc360e5-ae5f-4649-ab03-948d91f446f8</UserSecretsId>
-      <LangVersion>9</LangVersion>
+      <LangVersion>default</LangVersion>
+      <TargetFramework>netstandard2.1</TargetFramework>
   </PropertyGroup>
 
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -14,6 +14,7 @@
     <ItemGroup>
         <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="5.0.12" />
         <PackageReference Include="Mobile.BuildTools" Version="2.0.245" />
+        <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
         <PackageReference Include="Xamarin.Build.Download" Version="0.10.0" />
         <PackageReference Include="Xamarin.CommunityToolkit" Version="1.3.0" />
         <PackageReference Include="Xamarin.CommunityToolkit.Markup" Version="1.3.0" />

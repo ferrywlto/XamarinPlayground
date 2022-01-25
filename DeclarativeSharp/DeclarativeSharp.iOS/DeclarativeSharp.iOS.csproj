@@ -12,7 +12,7 @@
         <IPhoneResourcePrefix>Resources</IPhoneResourcePrefix>
         <AssemblyName>DeclarativeSharp.iOS</AssemblyName>
         <MtouchHttpClientHandler>NSUrlSessionHandler</MtouchHttpClientHandler>
-        <LangVersion>9</LangVersion>
+        <LangVersion>default</LangVersion>
     </PropertyGroup>
     <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|iPhoneSimulator' ">
         <DebugSymbols>true</DebugSymbols>
@@ -98,7 +98,6 @@
         <Compile Include="TransactionStateHandler.cs" />
         <None Include="Entitlements.plist" />
         <None Include="Info.plist" />
-        <Compile Include="MyPaymentTransactionObserverDeprecated.cs" />
         <Compile Include="MyPaymentTransactionObserver.cs" />
         <Compile Include="ProductRequestDelegateImpl.cs" />
         <Compile Include="Properties\AssemblyInfo.cs" />
